@@ -259,16 +259,16 @@ app.delete('/api/capsules/:id', authenticateToken, (req, res) => {
 // SPA CLIENT ROUTING FALLBACK
 // ==========================================
 // Any request that isn't an API route or callback is served the React app
-app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api') && !req.path.startsWith('/auth')) {
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/auth')) {
         res.sendFile(path.join(clientDistPath, 'index.html'));
     } else {
         res.status(404).json({ error: "Route not found" });
     }
 });
 
-// Start Server
+// Start Server once
 app.listen(PORT, () => {
-    console.log(`AI Capsule server running at ${BASE_URL}`);
+    console.log(`AI Capsule server running on port ${PORT}`);
 });
 
