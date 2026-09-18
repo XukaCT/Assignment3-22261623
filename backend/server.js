@@ -25,7 +25,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Serve static frontend files built by Vite
-app.use(express.static(path.join(__dirname, 'dist')));
+const clientDistPath = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDistPath));
 
 // ==========================================
 // PUBLIC HEALTH CHECK
@@ -260,15 +261,14 @@ app.delete('/api/capsules/:id', authenticateToken, (req, res) => {
 // Any request that isn't an API route or callback is served the React app
 app.get('*', (req, res) => {
     if (!req.path.startsWith('/api') && !req.path.startsWith('/auth')) {
-        res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+        res.sendFile(path.join(clientDistPath, 'index.html'));
+    } else {
+        res.status(404).json({ error: "Route not found" });
     }
-});
-
-app.listen(PORT, () => {
-    console.log(`AI Capsule server running at ${BASE_URL}`);
 });
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`AI Capsule server running at http://localhost:${PORT}`);
+    console.log(`AI Capsule server running at ${BASE_URL}`);
 });
+
