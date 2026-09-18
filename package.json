@@ -2,7 +2,7 @@
   "name": "ai-capsule",
   "version": "1.0.0",
   "scripts": {
-    "install:all": "npm install && npm install --prefix client && npm install --prefix backend",
+    "install:all": "npm install && npm install --prefix client",
     "build": "npm run build --prefix client",
     "start": "node backend/server.js"
   },
