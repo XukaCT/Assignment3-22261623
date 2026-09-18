@@ -259,7 +259,9 @@ app.delete('/api/capsules/:id', authenticateToken, (req, res) => {
 // ==========================================
 // Any request that isn't an API route or callback is served the React app
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/auth')) {
+        res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+    }
 });
 
 app.listen(PORT, () => {
