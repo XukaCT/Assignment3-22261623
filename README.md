@@ -24,12 +24,7 @@ npm start
 cd client
 npm run dev
 ```
-
-## 3. Architecture & API Routes
-
-The client is built with React and Vite. In production, Express serves the built single-page application from `client/dist` from the same origin (`/`), eliminating cross-origin cookie restrictions. All data requests use native `fetch` with `credentials: 'include'` to pass HttpOnly session cookies.
-
-## 4. Mandatory API Routes & Frontend Communication:
+## 3. Mandatory API Routes & Frontend Communication:
 ### Mandatory API Routes:
 + `GET /` — Public landing page explaining AI Capsule.   
 + `GET /login` — Public route redirecting to GitHub OAuth consent.   
@@ -51,14 +46,14 @@ The React frontend handles all API communication through a centralized `api.js` 
 2. **Credential Inclusion:** Every `fetch` request made to the `/api/capsules` endpoints is configured with `credentials: 'include'`]. This tells the browser to automatically attach the `HttpOnly` JWT `token` cookie to the request headers.
 3. **JSON Payloads:** For `POST` and `PUT` requests, the React frontend serializes the form data into a JSON string (`body: JSON.stringify(data)`) and sets the `Content-Type: application/json` header so Express can parse it correctly.
    
-## 5. Authentication & JWT Session Management:
+## 4. Authentication & JWT Session Management:
 
 + **OAuth Provider**: The application uses GitHub OAuth for user authentication. The client initiates the flow by navigating to the `/login` route, which redirects the user to the GitHub authorization screen.
 + **JWT Issuance**: Once the user authorizes the app, GitHub redirects back to the `/auth/github/callback` route with an authorization code. The Express backend exchanges this code for a GitHub access token, retrieves the user's GitHub ID, and signs a custom application JWT using the `jsonwebtoken` package and a private `JWT_SECRET` environment variable.
 + **Storage**: The Express server sends the signed application JWT back to the client inside a `Secure`, `HttpOnly` cookie named `token` (configured with a 2-hour expiration and `SameSite=lax`). This keeps the token safe from client-side JavaScript access.
 + **Verification**: Protected API routes (like `/api/capsules`) are guarded by an `authenticateToken` middleware function. This middleware reads the `token` from the incoming request cookies and validates its signature using the `JWT_SECRET`. If valid, it extracts the `user_id` to ensure users can only access their own records; if missing or invalid, it blocks the request and returns a `401 Unauthorized` status.
 
-## 6. Environment Variables:
+## 5. Environment Variables:
 
 + `NODE_ENV`             (set to production)
 + `NODE_VERSION`         (set to 20 to guarantee binary compatibility)
@@ -69,7 +64,7 @@ The React frontend handles all API communication through a centralized `api.js` 
 + `BASE_URL`             (public Render HTTPS URL)
 + `CLIENT_URL`           (public Render HTTPS URL)
 
-## 7. Database Creation & Initialization:
+## 6. Database Creation & Initialization:
 
 I) Database Creation & Initialization:
 
@@ -83,7 +78,7 @@ User ownership is enforced through a mandatory `user_id TEXT NOT NULL` column wi
 
 The deployed storage on Render's free web service tier is ephemeral (temporary). Because SQLite saves data to a local file (`database.sqlite`) on the container's disk, any prompt records added by a user will be permanently lost whenever the Render container goes to sleep, restarts, or is redeployed.
 
-## 8.  two cURL commands and the results
+## 7.  two cURL commands and the results
 ### Test 1 — No Authentication
 ```bash
 curl.exe -i https://ai-capsule-b7pf.onrender.com/api/capsules
@@ -136,7 +131,7 @@ alt-svc: h3=":443"; ma=86400
 
 {"error":"Invalid token."}
 ```
-## 9.  Limitation of the submitted application.
+## 8.  Limitation of the submitted application.
 
 Because the application uses an SQLite database (database.sqlite) stored locally on the server, it is restricted by Render's ephemeral filesystem on the free tier. Whenever the Render instance spins down due to inactivity or undergoes a redeployment, the local filesystem is wiped and reset. As a result, any AI prompt records created and saved by the user during a session will be permanently lost when the server restarts.
 
